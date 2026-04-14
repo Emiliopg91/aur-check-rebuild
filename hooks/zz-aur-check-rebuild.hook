@@ -7,5 +7,5 @@ Target = *
 [Action]
 Description = Checking AUR packages to rebuild...
 When = PostTransaction
-Exec = /usr/share/libalpm/scripts/check-rebuild
+Exec = /usr/share/libalpm/scripts/aur-check-rebuild
 NeedsTargets

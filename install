@@ -2,6 +2,6 @@
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-sudo install -Dm644 "$DIR/hooks/zz-check-rebuild.hook" "/usr/share/libalpm/hooks/zz-check-rebuild.hook"
+sudo install -Dm644 "$DIR/hooks/zz-aur-check-rebuild.hook" "/usr/share/libalpm/hooks/zz-aur-check-rebuild.hook"
 
-sudo install -Dm755 "$DIR/scripts/check-rebuild.py" "/usr/share/libalpm/scripts/check-rebuild"
+sudo install -Dm755 "$DIR/scripts/aur-check-rebuild.py" "/usr/share/libalpm/scripts/aur-check-rebuild"
