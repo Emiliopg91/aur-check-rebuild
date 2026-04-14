@@ -33,6 +33,6 @@ build() {
 }
 
 package() {
-  install -Dm644 "$srcdir/hooks/zz-aur-check-rebuild.hook" "$pkgdir/usr/share/libalpm/hooks/zz-aur-check-rebuild.hook"
-  install -Dm755 "$srcdir/scripts/aur-check-rebuild.py" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild"
+  install -Dm644 "$srcdir/aur-check-rebuild/hooks/zz-aur-check-rebuild.hook" "$pkgdir/usr/share/libalpm/hooks/zz-aur-check-rebuild.hook"
+  install -Dm755 "$srcdir/aur-check-rebuild/scripts/aur-check-rebuild.py" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild"
 }
