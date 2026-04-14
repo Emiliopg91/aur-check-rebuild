@@ -3,8 +3,8 @@
 # Contributor: Sébastien Luttringer
 
 pkgname=aur-check-rebuild
-pkgver=1.0.1
-pkgrel=1
+pkgver=1.0.0
+pkgrel=2
 pkgdesc='Pacman hook to check and launch rebuild of AUR packages affected by updates'
 arch=('x86_64')
 url='https://github.com/Emiliopg91/aur-check-rebuild'
@@ -15,7 +15,10 @@ depends=(
   'python-pip'
 )
 source=(
-  "git+$url.git#tag=$pkgver"
+  "git+$url.git#tag=$pkgver-$pkgrel"
+)
+sha256sums=(
+  'SKIP'
 )
 
 prepare() {
