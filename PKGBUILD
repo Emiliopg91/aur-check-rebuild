@@ -3,7 +3,7 @@
 # Contributor: Sébastien Luttringer
 
 pkgname=aur-check-rebuild
-pkgver=1.0.0
+pkgver=1.0.1
 pkgrel=1
 pkgdesc='Pacman hook to check and launch rebuild of AUR packages affected by updates'
 arch=('x86_64')
@@ -31,5 +31,5 @@ build() {
 
 package() {
   install -Dm644 "hooks/zz-aur-check-rebuild.hook" "$pkgdir/usr/share/libalpm/hooks/zz-aur-check-rebuild.hook"
-  install -Dm755 "scripts/aur-check-rebuild.py" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild
+  install -Dm755 "scripts/aur-check-rebuild.py" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild"
 }
