@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Upgrade
+Operation = Install
+Type = Package
+Target = *
+
+[Action]
+Description = Checking AUR packages to rebuild...
+When = PostTransaction
+Exec = /usr/share/libalpm/scripts/check-rebuild
+NeedsTargets
