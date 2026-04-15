@@ -210,3 +210,4 @@ aur-check-rebuild
 pkg
 src
 *.tar.zst
+aur
