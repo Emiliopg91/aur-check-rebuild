@@ -56,10 +56,8 @@ class Settings(DataClassJsonMixin):
 
     @staticmethod
     def load(path= SETTINGS_FILE):
-        print(f"Loading settings from {SETTINGS_FILE}")
         with open(path, "r", encoding="utf-8") as f:
             settings= Settings.from_json(f.read())
-        print(f"  {settings}")
         return settings
 
 def __get_updated_packages():
