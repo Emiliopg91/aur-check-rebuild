@@ -37,16 +37,16 @@ class StripColorFormatter(logging.Formatter):
 
 @dataclass
 class ScanSettings(DataClassJsonMixin):
-    recursive: bool = True
+    recursive: bool = field(default=True)
 
 @dataclass
 class RebuildSettings(DataClassJsonMixin):
-    automatic: bool = True
+    automatic: bool = field(default=True)
 
 @dataclass
 class LogSettings(DataClassJsonMixin):
-    level: str = "INFO"
-    path: str = None
+    level: str = field(default="INFO")
+    path: str = field(default=None)
 
 @dataclass
 class Settings(DataClassJsonMixin):
@@ -56,8 +56,10 @@ class Settings(DataClassJsonMixin):
 
     @staticmethod
     def load(path= SETTINGS_FILE):
+        print(f"Loading settings from {SETTINGS_FILE}")
         with open(path, "r", encoding="utf-8") as f:
             settings= Settings.from_json(f.read())
+        print(f"  {settings}")
         return settings
 
 def __get_updated_packages():
@@ -66,8 +68,10 @@ def __get_updated_packages():
         local_packages.append(target.strip())
     return local_packages
 
-def __get_packages_with_so(allpkgs, upd_pkgs):
+def __get_packages_with_so(allpkgs, upd_pkgs, aurpkgs):
     pkgs = {}
+
+    logging.debug("    Getting packages with .SO...")
 
     for name in upd_pkgs:
         pkg = allpkgs.get(name)
@@ -81,6 +85,7 @@ def __get_packages_with_so(allpkgs, upd_pkgs):
 
         if matched_files:
             pkgs[name] = matched_files
+            logging.debug(f"      {name}: {matched_files}")
 
     return pkgs
 
@@ -97,9 +102,11 @@ def __build_aur_set(local_db, sync_dbs):
 
 def __filter_packages_from_aur(aurpkgs, deps):
     aur_pkgs_with_dep = {}
+    logging.debug("    Getting AUR dependant packages...")
     for pkg, (depends, files) in aurpkgs.items():
         if any(dep in deps for dep in depends):
             aur_pkgs_with_dep[pkg] = (depends, files)
+            logging.debug(f"      {pkg}: {[dep for dep in deps if dep in depends]}")
 
     return aur_pkgs_with_dep
 
@@ -250,6 +257,12 @@ def __launch_rebuild_cmd(pkgs, prt, helper , rebuild_settings: RebuildSettings):
         logging.info("Run the following command to perform rebuild:")
         logging.info("  %s -S --aur %s", helper, " ".join(pkgs))
 
+def __removed_undependant_updated_packages(upd_pkgs, aurpkgs):
+    logging.debug("    Cleaning packages without dependants...")
+    res = [filtered for filtered in upd_pkgs if any(aurpkg for aurpkg,(depends,*_) in aurpkgs.items() if filtered in depends)]
+    for r in res:
+        logging.debug(f"      {r}")
+    return res
 
 def __get_packages_to_rebuild(allpkgs, aurpkgs, scan_settings: ScanSettings):
     updated_packages = __get_updated_packages()
@@ -258,15 +271,20 @@ def __get_packages_to_rebuild(allpkgs, aurpkgs, scan_settings: ScanSettings):
         logging.debug("  %s", p)
 
     logging.info("Found %s pacman packages", len(allpkgs))
-    logging.info("Scanning %s AUR packages...", len(aurpkgs))
+    logging.info("Found %s AUR packages...", len(aurpkgs))
+    for p in aur_pkgs:
+        logging.debug("  %s", p)
 
+    logging.info("Looking for dependant packages...")
     ptr = []
     pdm = {}
     iteration=0
     while scan_settings.recursive or iteration==0:
-        packages_with_so = __get_packages_with_so(allpkgs, updated_packages)
-        for p in packages_with_so:
-            logging.debug("  %s", p)
+        logging.debug(f"  Iteration {iteration}")
+
+        updated_packages = __removed_undependant_updated_packages(updated_packages, aurpkgs)
+
+        packages_with_so = __get_packages_with_so(allpkgs, updated_packages, aurpkgs)
 
         packages_from_aur = {
             p: (d, f)
@@ -275,8 +293,6 @@ def __get_packages_to_rebuild(allpkgs, aurpkgs, scan_settings: ScanSettings):
             ).items()
             if p not in ptr
         }
-        for p in packages_from_aur:
-            logging.debug("  %s", p)
 
         tmp_list = {
             p: d
@@ -316,9 +332,20 @@ def __initialize():
     settings = Settings.load()
 
     logger = logging.getLogger()
-    logger.setLevel(logging.getLevelName(settings.log.level))
+    logger.setLevel(logging.getLevelName(logging.DEBUG))
     
     logger.handlers.clear()
+
+    if settings.log.path:
+        try:
+            file_handler = logging.FileHandler(settings.log.path, encoding="utf-8")
+            file_handler.setFormatter(StripColorFormatter(
+                "[%(asctime)s] [%(levelname)-6s] %(message)s"
+            ))
+            logger.addHandler(file_handler)
+            logger.debug("###########################################################")
+        except:
+            pass
     
     console_handler = logging.StreamHandler()
     console_handler.setLevel(settings.log.level)
@@ -326,20 +353,6 @@ def __initialize():
         "  %(message)s"
     ))
     logger.addHandler(console_handler)
-
-    if settings.log.path:
-        try:
-            exists=False
-            if os.path.exists(settings.log.path):
-                os.unlink(settings.log.path)
-            file_handler = logging.FileHandler(settings.log.path, encoding="utf-8")
-            file_handler.setLevel(settings.log.level)
-            file_handler.setFormatter(StripColorFormatter(
-                "[%(asctime)s] [%(levelname)s] %(message)s"
-            ))
-            logger.addHandler(file_handler)
-        except:
-            pass
 
     helper = __detect_aur_helper()
 

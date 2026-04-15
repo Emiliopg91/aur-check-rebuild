@@ -3,8 +3,8 @@
 # Contributor: Sébastien Luttringer
 
 pkgname=aur-check-rebuild
-pkgver=1.0.2
-pkgrel=2
+pkgver=1.0.3
+pkgrel=1
 pkgdesc='Pacman hook to check and launch rebuild of AUR packages affected by updates'
 arch=('x86_64')
 url='https://github.com/Emiliopg91/aur-check-rebuild'
