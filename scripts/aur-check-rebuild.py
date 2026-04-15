@@ -229,7 +229,7 @@ def __launch_rebuild_cmd(pkgs, prt, helper , rebuild_settings: RebuildSettings):
                 check=False,
             )
 
-            logging.info(
+            logging.debug(
                 "Finished after %s with status %s",
                 int((time.time() - tp0) * 1000) / 1000,
                 proc.returncode,
