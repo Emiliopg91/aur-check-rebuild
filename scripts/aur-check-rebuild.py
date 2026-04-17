@@ -134,6 +134,7 @@ def __gen_database():
     with Pool() as pool:
         for pkg in all_pkgs:
             __handle_package_install(pkg, pool, cursor)
+            counter = counter + 1
     print("Writing database...")
     conn.commit()
 
