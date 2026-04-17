@@ -1,0 +1,11 @@
+{
+    "scan": {
+        "recursive": true
+    },
+    "rebuild": {
+        "automatic": false
+    },
+    "log": {
+        "level": "INFO"
+    }
+}
