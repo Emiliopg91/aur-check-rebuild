@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Removing packages from database...
+When = PostTransaction
+Exec = /usr/share/libalpm/scripts/aur-check-rebuild/aur-check-rebuild.py --uninstall
+NeedsTargets

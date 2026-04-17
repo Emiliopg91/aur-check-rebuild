@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Type = Package
+Target = *
+
+[Action]
+Description = Adding new packages to database...
+When = PostTransaction
+Exec = /usr/share/libalpm/scripts/aur-check-rebuild/aur-check-rebuild.py --install
+NeedsTargets

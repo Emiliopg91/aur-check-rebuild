@@ -7,10 +7,15 @@ post_install() {
   echo "You can change the behaviour editing the following file"
   echo "    /usr/share/aur-check-rebuild/settings.json"
   echo ""
-  echo "Logs can be found here"
-  echo "    /var/log/aur-check-rebuild.log"
-  echo ""
+
+  if [ ! -f "/usr/share/aur-check-rebuild/database.db" ]; then
+      /usr/share/libalpm/scripts/aur-check-rebuild/aur-check-rebuild.py --database
+  fi
 }
 post_upgrade() {
   post_install
+}
+
+post_remove() {
+  rm -f /usr/share/aur-check-rebuild/database.db
 }
