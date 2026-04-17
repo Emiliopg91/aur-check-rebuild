@@ -90,6 +90,13 @@ def __handle_package_file(file):
     return (file, is_so, required)
 
 
+def progress_bar(current, total, width=30):
+    percent = current / total
+    filled = int(width * percent)
+    bar = "█" * filled + "-" * (width - filled)
+    print(f"\r[{bar}] {percent*100:6.2f}%", end="", flush=True)
+
+
 def __handle_package_install(pkg: str, pool, cursor):
     def normalize_dep(dep: str) -> str:
         return re.split(r"[<>=]", dep, maxsplit=1)[0]
@@ -132,10 +139,13 @@ def __gen_database():
     libalpm_client = libalpm.get_libalpm()
     all_pkgs = libalpm.get_all_pkgs(libalpm_client)
     with Pool() as pool:
+        counter = 0
+        progress_bar(0, len(all_pkgs))
         for pkg in all_pkgs:
             __handle_package_install(pkg, pool, cursor)
             counter = counter + 1
-    print("Writing database...")
+            progress_bar(counter, len(all_pkgs))
+    print("\nWriting database...")
     conn.commit()
 
 
