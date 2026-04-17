@@ -26,9 +26,7 @@ package() {
 
   touch "aur-check-rebuild.log" 
 
-  install -Dm644 "hooks/zz-aur-check-rebuild-install.hook" "$pkgdir/usr/share/libalpm/hooks/zz-aur-check-rebuild-install.hook"
-  install -Dm644 "hooks/zz-aur-check-rebuild-remove.hook" "$pkgdir/usr/share/libalpm/hooks/zz-aur-check-rebuild-remove.hook"
-  install -Dm644 "hooks/zz-aur-check-rebuild-upgrade.hook" "$pkgdir/usr/share/libalpm/hooks/zz-aur-check-rebuild-upgrade.hook"
+  install -Dm644 "hooks/zz-aur-check-rebuild.hook" "$pkgdir/usr/share/libalpm/hooks/zz-aur-check-rebuild.hook"
   cp -R "scripts" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild"
   install -Dm644 "settings.json" "$pkgdir/usr/share/aur-check-rebuild/settings.json"
   install -Dm644 "aur-check-rebuild.log" "$pkgdir/var/log/aur-check-rebuild.log"
