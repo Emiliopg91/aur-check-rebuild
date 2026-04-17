@@ -1,0 +1,12 @@
+{
+    "scan": {
+        "recursive": true
+    },
+    "rebuild": {
+        "automatic": false
+    },
+    "log": {
+        "level": "INFO",
+        "path": "/var/log/aur-check-rebuild.log"
+    }
+}
