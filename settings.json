@@ -3,7 +3,7 @@
         "recursive": true
     },
     "rebuild": {
-        "automatic": false
+        "automatic": true
     },
     "log": {
         "level": "INFO",
