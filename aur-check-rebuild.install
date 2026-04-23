@@ -12,7 +12,7 @@ post_install() {
 
   LOG_PATH=$(jq -r '.log.path' "$JSON_FILE")
 
-  pip install --break-system-packages --root-user-action pyalpm
+  pip install --root-user-action ignore --break-system-packages pyalpm
 
   echo ""
   echo "This hook will look for AUR packages that requires rebuild to keep working due to ABI changes in shared libraries."
