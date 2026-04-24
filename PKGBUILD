@@ -1,6 +1,6 @@
 pkgname=aur-check-rebuild
-pkgver=1.2.3
-pkgrel=4
+pkgver=1.2.4
+pkgrel=1
 pkgdesc='Pacman hook to check and launch rebuild of AUR packages affected by updates'
 arch=('x86_64')
 url='https://github.com/Emiliopg91/aur-check-rebuild'
