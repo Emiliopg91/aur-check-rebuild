@@ -16,7 +16,7 @@ import time
 from pycman.config import init_with_config
 import psutil
 
-from helpers.settings import Settings, ScanSettings, RebuildSettings
+from helpers.settings import *
 from helpers import libalpm
 
 IN_REBUILD_FILE = "/tmp/in_rebuild"
@@ -233,48 +233,54 @@ def __initialize():
 
 
 if __name__ == "__main__":
-    if os.path.exists(IN_REBUILD_FILE):
-        with open(IN_REBUILD_FILE, "r", encoding="utf-8") as f:
-            pid = int(f.read())
+    if "--settings" in sys.argv:
+        with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
+            f.write(Settings().to_json(indent=4))
+    elif "--logpath" in sys.argv:
+        print(Settings.load().log.path)
+    else:
+        if os.path.exists(IN_REBUILD_FILE):
+            with open(IN_REBUILD_FILE, "r", encoding="utf-8") as f:
+                pid = int(f.read())
+            try:
+                if __file__ in psutil.Process(pid).cmdline():
+                    logging.debug("Skipping due to rebuild...")
+                    sys.exit(0)
+            except SystemExit:
+                raise
+            except:
+                pass
         try:
-            if __file__ in psutil.Process(pid).cmdline():
-                logging.debug("Skipping due to rebuild...")
-                sys.exit(0)
-        except SystemExit:
-            raise
-        except:
-            pass
-    try:
-        settings, helper, libalpm_inst, all_pkgs, aur_pkgs = __initialize()
+            settings, helper, libalpm_inst, all_pkgs, aur_pkgs = __initialize()
 
-        t0 = time.time()
+            t0 = time.time()
 
-        packages_to_rebuild, packages_dep_map = __get_packages_to_rebuild(
-            all_pkgs, aur_pkgs, settings.scan
-        )
-        packages_to_rebuild = sorted(packages_to_rebuild)
-
-        t1 = time.time()
-
-        logging.info(
-            "  Scan finished after %s seconds",
-            int((t1 - t0) * 1000) / 1000,
-        )
-        logging.info(
-            "Packages to rebuild: %s",
-            len(packages_to_rebuild),
-        )
-        if len(packages_to_rebuild) > 0:
-            for package in packages_to_rebuild:
-                logging.info(
-                    "  \033[1;37m%s\033[0m: \033[90m%s\033[0m",
-                    package,
-                    ", ".join(sorted(packages_dep_map[package])),
-                )
-
-            pre_rebuild_time = int(time.time())
-            __launch_rebuild_cmd(
-                packages_to_rebuild, pre_rebuild_time, helper, settings.rebuild
+            packages_to_rebuild, packages_dep_map = __get_packages_to_rebuild(
+                all_pkgs, aur_pkgs, settings.scan
             )
-    except subprocess.CalledProcessError as e:
-        sys.exit(e.returncode)
+            packages_to_rebuild = sorted(packages_to_rebuild)
+
+            t1 = time.time()
+
+            logging.info(
+                "  Scan finished after %s seconds",
+                int((t1 - t0) * 1000) / 1000,
+            )
+            logging.info(
+                "Packages to rebuild: %s",
+                len(packages_to_rebuild),
+            )
+            if len(packages_to_rebuild) > 0:
+                for package in packages_to_rebuild:
+                    logging.info(
+                        "  \033[1;37m%s\033[0m: \033[90m%s\033[0m",
+                        package,
+                        ", ".join(sorted(packages_dep_map[package])),
+                    )
+
+                pre_rebuild_time = int(time.time())
+                __launch_rebuild_cmd(
+                    packages_to_rebuild, pre_rebuild_time, helper, settings.rebuild
+                )
+        except subprocess.CalledProcessError as e:
+            sys.exit(e.returncode)

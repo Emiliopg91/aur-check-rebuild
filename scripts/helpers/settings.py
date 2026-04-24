@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from dataclasses_json import DataClassJsonMixin
 
-SETTINGS_FILE = "/usr/share/aur-check-rebuild/settings.json"
+SETTINGS_FILE = "/etc/aur-check-rebuild"
 
 
 @dataclass
@@ -19,7 +19,7 @@ class RebuildSettings(DataClassJsonMixin):
 @dataclass
 class LogSettings(DataClassJsonMixin):
     level: str = field(default="INFO")
-    path: str = field(default=None)
+    path: str = field(default="/var/log/aur-check-rebuild.log")
 
 
 @dataclass
