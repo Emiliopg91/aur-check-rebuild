@@ -17,7 +17,7 @@ post_install() {
     echo ""
   fi
 
-  echo ""
+  echo " ==> Installation finished"
   echo "This hook will look for AUR packages that requires rebuild to keep working due to ABI changes in shared libraries."
   echo ""
   echo "You can change the behaviour editing the following file"
