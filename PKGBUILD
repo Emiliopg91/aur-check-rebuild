@@ -22,12 +22,10 @@ sha256sums=(
 install=${pkgname}.install
 
 package() {
-  cd "$srcdir/aur-check-rebuild"
+  cd "$srcdir/aur-check-rebuild/scripts"
+  install -Dm755 "main.py" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild/main.py"
+  find helpers -type f -exec install -Dm644 "{}" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild/{}" \;
 
-  install -Dm644 "settings.json" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild/settings-default.json"
-  install -Dm644 "hooks/zz-aur-check-rebuild.hook" "$pkgdir/usr/share/libalpm/hooks/zz-aur-check-rebuild.hook"
-  
-  install -Dm755 "scripts/main.py" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild/main.py"
-  cd scripts/helpers
-  find . -type f -exec install -Dm644 "{}" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild/helpers/{}" \;
+  cd "$srcdir/aur-check-rebuild/hooks"
+  install -Dm644 "zz-aur-check-rebuild.hook" "$pkgdir/usr/share/libalpm/hooks/zz-aur-check-rebuild.hook"
 }
