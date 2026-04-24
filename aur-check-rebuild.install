@@ -6,13 +6,15 @@ post_install() {
 
   pip list | grep pyalpm > /dev/null 2>&1
   if [ $? -eq 1 ]; then
-    echo "Installing pyalpm lib..."
+    echo " ==> Installing pyalpm lib..."
     pip install --root-user-action ignore --break-system-packages pyalpm
+    echo ""
   fi
 
   if [ ! -f "$SETTINGS_FILE" ]; then
-    echo "Creating configuration file..."
+    echo " ==> Creating configuration file..."
     "$EXEC_FILE" --settings
+    echo ""
   fi
 
   echo ""
