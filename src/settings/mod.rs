@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
 
-const SETTINGS_FILE: &str = "/etc/aur-check-rebuild";
+const SETTINGS_FILE: &str = "/etc/aur-check-rebuild.conf";
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ScanSettings {
@@ -45,19 +45,20 @@ impl Default for Settings {
 }
 
 pub fn load_settings() -> std::io::Result<Settings> {
-    let data = fs::read_to_string(SETTINGS_FILE)?;
+    let mut settings = Settings::default();
 
-    let settings: Settings = serde_json::from_str(&data)
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+    if fs::exists(SETTINGS_FILE)? {
+        let data = fs::read_to_string(SETTINGS_FILE)?;
+        settings = toml::from_str(&data).unwrap_or_default();
+    }
 
     Ok(settings)
 }
 
 pub fn save_settings(settings: &Settings) -> std::io::Result<()> {
-    let json = serde_json::to_string_pretty(settings)
+    let toml = toml::to_string_pretty(settings)
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
 
-    fs::write(SETTINGS_FILE, json)?;
-
+    std::fs::write(SETTINGS_FILE, toml)?;
     Ok(())
 }
