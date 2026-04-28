@@ -6,5 +6,5 @@ Target = *
 [Action]
 Description = Checking AUR packages to rebuild...
 When = PostTransaction
-Exec = /usr/share/libalpm/scripts/aur-check-rebuild/main.py
+Exec = /usr/share/libalpm/scripts/aur-check-rebuild
 NeedsTargets

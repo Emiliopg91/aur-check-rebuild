@@ -1,6 +1,6 @@
 pkgname=aur-check-rebuild
-pkgver=1.2.4
-pkgrel=3
+pkgver=1.3.0
+pkgrel=1
 pkgdesc='Pacman hook to check and launch rebuild of AUR packages affected by updates'
 arch=('x86_64')
 url='https://github.com/Emiliopg91/aur-check-rebuild'
@@ -8,10 +8,9 @@ license=('GPL-2')
 depends=(
   'alacritty'
   'pacman'
-  'python'
-  'python-pip'
-  'python-dataclasses-json'
-  'python-psutil'
+)
+makedepends=(
+  rust
 )
 source=(
   "git+$url.git#tag=$pkgver-$pkgrel"
@@ -21,11 +20,13 @@ sha256sums=(
 )
 install=${pkgname}.install
 
-package() {
-  cd "$srcdir/aur-check-rebuild/scripts"
-  install -Dm755 "main.py" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild/main.py"
-  find helpers -type f -exec install -Dm644 "{}" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild/{}" \;
+build() {
+  cd "$srcdir/aur-check-rebuild"
+  pwd
+  cargo build --release
+}
 
-  cd "$srcdir/aur-check-rebuild/hooks"
-  install -Dm644 "zz-aur-check-rebuild.hook" "$pkgdir/usr/share/libalpm/hooks/zz-aur-check-rebuild.hook"
+package() {
+  install -Dm755 "$srcdir/aur-check-rebuild/target/release/aur-check-rebuild" "$pkgdir/usr/share/libalpm/scripts/aur-check-rebuild"
+  install -Dm644 "$srcdir/aur-check-rebuild/hooks/zz-aur-check-rebuild.hook" "$pkgdir/usr/share/libalpm/hooks/zz-aur-check-rebuild.hook"
 }

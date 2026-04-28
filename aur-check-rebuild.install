@@ -2,14 +2,7 @@
 
 post_install() {
   SETTINGS_FILE="/etc/aur-check-rebuild"
-  EXEC_FILE="/usr/share/libalpm/scripts/aur-check-rebuild/main.py"
-
-  pip list | grep pyalpm > /dev/null 2>&1
-  if [ $? -eq 1 ]; then
-    echo " ==> Installing pyalpm lib..."
-    pip install --root-user-action ignore --break-system-packages pyalpm
-    echo ""
-  fi
+  EXEC_FILE="/usr/share/libalpm/scripts/aur-check-rebuild"
 
   if [ ! -f "$SETTINGS_FILE" ]; then
     echo " ==> Creating configuration file..."
@@ -22,9 +15,6 @@ post_install() {
   echo ""
   echo "You can change the behaviour editing the following file"
   echo "    $SETTINGS_FILE"
-  echo ""
-  echo "Logs can be found here"
-  echo "    $($EXEC_FILE --logpath)"
   echo ""
 }
 post_upgrade() {
