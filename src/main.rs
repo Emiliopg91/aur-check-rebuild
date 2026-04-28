@@ -27,9 +27,8 @@ use crate::{
 fn on_update() {
     let _lock = match LockFile::try_to_acquire("aur-check-rebuild".to_string()) {
         Ok(_lock) => _lock,
-        Err(e) => {
-            eprintln!("{}", e);
-            process::exit(1);
+        Err(_) => {
+            process::exit(0);
         }
     };
 

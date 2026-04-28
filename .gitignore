@@ -4,3 +4,4 @@
 /aur-check-rebuild
 /pkg
 /src/aur-check-rebuild
+/*.pkg.tar.zst
