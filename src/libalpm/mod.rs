@@ -93,7 +93,22 @@ pub fn load_package_from_file(file: &str) -> PacmanPackage {
         .cloned()
         .unwrap_or_else(|| "unknown".to_string());
 
-    let depends = desc.fields.get("DEPENDS").cloned().unwrap_or_default();
+    let depends: Vec<String> = desc
+        .fields
+        .get("DEPENDS")
+        .cloned()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|d| {
+            let i = d.find(|c| matches!(c, '>' | '<' | '=' | ':'));
+            match i {
+                Some(pos) => d[..pos].to_string(),
+                None => d,
+            }
+        })
+        .collect::<HashSet<_>>()
+        .into_iter()
+        .collect();
 
     PacmanPackage {
         name,
@@ -119,7 +134,7 @@ pub fn load_localdb_packages() -> HashMap<String, PacmanPackage> {
     return data;
 }
 
-static LOCALDB: Lazy<HashMap<String, PacmanPackage>> = Lazy::new(|| load_localdb_packages());
+pub static LOCALDB: Lazy<HashMap<String, PacmanPackage>> = Lazy::new(|| load_localdb_packages());
 
 #[cached]
 pub fn get_local_packages() -> Vec<String> {
@@ -183,12 +198,11 @@ pub fn get_so_files_of_pkg(pkg: &str) -> Vec<String> {
 }
 
 #[cached(key = "String", convert = r#"{ pkg.to_string() }"#)]
-pub fn get_so_dependencies_of_pkg(pkg: &str) -> Vec<String> {
+pub fn get_so_dependencies_of_pkg(pkg: &str) -> HashMap<String, Vec<String>> {
     get_files_of_package(pkg)
         .par_iter()
-        .flat_map(|f| get_needed_shared_objects(f))
-        .collect::<HashSet<_>>()
-        .into_iter()
+        .map(|f| (f.clone(), get_needed_shared_objects(f)))
+        .filter(|(_, l)| l.len() > 0)
         .collect()
 }
 
